@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import axios from 'axios';
 
 const dark = 'mapbox://styles/benryan/clkuv54ck000u01po9b59cvgr';
 
@@ -9,19 +8,19 @@ let mapboxMap;
 
 const responsiveMapDesign = 'h-screen w-screen mt-5';
 
-const MapWithLiveMusic = ({ mapboxToken }) => {
-	const [coords, setCoords] = useState({
-		lng: -77.02,
-		lat: 38.887,
-		zoom: 12.5
-	});
+const geojsonUrl =
+	'https://api.mapbox.com/datasets/v1/benryan/clm6kfpqh0edv2pqlj5ivt191/features?access_token=pk.eyJ1IjoiYmVucnlhbiIsImEiOiJja3ltcjM4M2YxM3doMm51ZnVpZGlldDY1In0.loY8zy26I0UH9S6CJP2wQg';
 
-	const [musicData, setMusicData] = useState({});
+const AirportsCluster = ({ mapboxToken }) => {
+	const [coords, setCoords] = useState({
+		lng: -103.5917,
+		lat: 40.6699,
+		zoom: 3
+	});
 
 	const mapNode = useRef(null);
 
 	useEffect(() => {
-		// fetchLiveMusic();
 		const node = mapNode.current;
 
 		if (typeof window === 'undefined') return;
@@ -31,12 +30,7 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 			accessToken: mapboxToken,
 			style: dark,
 			center: [coords.lng, coords.lat],
-			zoom: coords.zoom,
-			pitch: 45,
-			maxBounds: [
-				[-77.875588, 38.50705], // Southwest coordinates
-				[-76.15381, 39.548764] // Northeast coordinates
-			]
+			zoom: coords.zoom
 		});
 
 		mapboxMap.on('move', () => {
@@ -48,34 +42,25 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 			}));
 		});
 
-		// * source by addSource() provides map data to render visually on the map
 		mapboxMap.on('load', () => {
-			// check if dcmusic.live source exists
-			if (!mapboxMap.getSource('dcmusic.live')) {
-				mapboxMap.addSource('dcmusic.live', {
-					type: 'geojson',
-					data: '/api/live-music',
+			if (!mapboxMap.getSource('airports.data')) {
+				console.log('Load Airports');
+				// #4182C4
+				mapboxMap.addSource('airports.data', {
+					type: 'geojson', // Point to GeoJSON data. This example visualizes all M1.0+ earthquakes
+					data: geojsonUrl,
 					cluster: true, // to enable cluster numbers and its dynamic styling
 					clusterMaxZoom: 14, // Max zoom to cluster points on
-					clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50),
-					clusterProperties: {
-						sum: ['+', ['get', 'event_count']]
-					}
+					clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
 				});
-			} else {
-				mapboxMap.getSource('dcmusic.live').setData(musicData);
-			}
 
-			if (!mapboxMap.getLayer('clusters')) {
-				console.log(musicData);
-				// add clusters layer on the dcmusic.live source in the map
 				mapboxMap.addLayer({
-					id: 'clusters',
+					id: 'clusters', // unique identifier that you define, must be the same as click or mouse events
 					type: 'circle',
-					source: 'dcmusic.live',
+					source: 'airports.data',
 					filter: ['has', 'point_count'],
 					paint: {
-						'circle-color': 'rgb(229, 36, 59)',
+						'circle-color': '#4182C4',
 						'circle-radius': [
 							'step',
 							['get', 'point_count'],
@@ -85,21 +70,21 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 							750,
 							40
 						],
-						'circle-opacity': 0.75,
-						'circle-stroke-width': 4,
-						'circle-stroke-color': '#fff',
-						'circle-stroke-opacity': 0.5
+						// 'circle-opacity': 0.75,
+						// 'circle-stroke-width': 1.5,
+						'circle-stroke-color': '#fff'
+						// 'circle-stroke-opacity': 0.5
 					}
 				});
 
 				mapboxMap.addLayer({
 					id: 'cluster-count',
 					type: 'symbol',
-					source: 'dcmusic.live',
+					source: 'airports.data',
 					filter: ['has', 'point_count'],
 					layout: {
-						'text-field': '{sum}',
-						'text-font': ['Open Sans Bold'],
+						'text-field': ['get', 'point_count_abbreviated'],
+						'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
 						'text-size': 16
 					},
 					paint: {
@@ -123,7 +108,7 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 					const clusterCoords = features[0].geometry.coordinates;
 
 					mapboxMap
-						.getSource('dcmusic.live')
+						.getSource('airports.data')
 						.getClusterExpansionZoom(clusterId, (err, zoom) => {
 							if (err) return;
 
@@ -133,46 +118,17 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 							});
 						});
 				});
-			}
 
-			// * adding individual event with styling and individual point
-			if (!mapboxMap.getLayer('unclustered-point')) {
-				// add unclusters layer on the dcmusic.live source in the map
 				mapboxMap.addLayer({
 					id: 'unclustered-point',
 					type: 'circle',
-					source: 'dcmusic.live',
+					source: 'airports.data',
 					filter: ['!', ['has', 'point_count']],
 					paint: {
-						'circle-radius': [
-							'step',
-							['get', 'event_count'],
-							20,
-							100,
-							30,
-							750,
-							40
-						],
-						'circle-color': 'rgb(229, 36, 59)',
-						'circle-opacity': 0.75,
-						'circle-stroke-width': 4,
-						'circle-stroke-color': '#fff',
-						'circle-stroke-opacity': 0.5
-					}
-				});
-
-				mapboxMap.addLayer({
-					id: 'event-count',
-					type: 'symbol',
-					source: 'dcmusic.live',
-					filter: ['!', ['has', 'point_count']],
-					layout: {
-						'text-field': '{event_count}', // individual event count
-						'text-font': ['Open Sans Bold'],
-						'text-size': 16
-					},
-					paint: {
-						'text-color': 'white'
+						'circle-color': '#11b4da',
+						'circle-radius': 12, // the size of an individual circle layer
+						'circle-stroke-width': 1, // the border size of an circle layer
+						'circle-stroke-color': '#fff' // the border color of an circle layer
 					}
 				});
 
@@ -184,19 +140,26 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 				});
 
 				mapboxMap.on('click', 'unclustered-point', (e) => {
-					const coords = e.features[0].geometry.coordinates;
-					console.log(e);
-
 					const features = mapboxMap.queryRenderedFeatures(e.point, {
 						layers: ['unclustered-point']
 					});
+					console.log(e);
 
-					const musicTitle = features[0]?.properties?.title;
+					const coords = e.features[0].geometry.coordinates;
+					console.log(coords);
+					console.log(features);
+					console.log(features[0].properties);
+
+					const properties = features[0].properties;
 
 					new mapboxgl.Popup()
 						.setLngLat(coords)
 						.setHTML(
-							`<div class="mx-auto w-52"><p class="text-center text-lg text-light">${musicTitle}</p></div>`
+							`<div class="mx-auto w-52">
+                            <p class="text-center text-lg text-light">IATA: ${properties.iata_code}</p>
+                            <p class="text-center text-lg text-light">Name: ${properties.name}</p>
+                            <p class="text-center text-lg text-light">Coordinates: ${e.lngLat.lng}, ${e.lngLat.lat}</p>
+                            </div>`
 						)
 						.addTo(mapboxMap);
 				});
@@ -209,10 +172,6 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 		};
 	}, []);
 
-	// useEffect(() => {
-
-	// }, [musicData, setMusicData]);
-
 	return (
 		<>
 			<p className="lg:text-3xl md:text-3xl text-md mb-5">
@@ -223,4 +182,4 @@ const MapWithLiveMusic = ({ mapboxToken }) => {
 	);
 };
 
-export default MapWithLiveMusic;
+export default AirportsCluster;

@@ -88,6 +88,11 @@ const DataWithoutCluster = ({ mapboxToken }) => {
 				});
 			}
 		});
+
+		return () => {
+			mapboxMap.remove();
+			// mapboxMap.off('load', generateNewMarker);
+		};
 	}, []);
 
 	return (

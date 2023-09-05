@@ -7,3 +7,8 @@ Clustering Concepts
 
 GeoJSON Tools
 - https://docs.mapbox.com/help/glossary/geojson/
+
+
+Airports GeoJSON Data:
+- https://github.com/codeforgermany/click_that_hood/blob/main/public/data/airports.geojson?short_path=505c236
+- https://data.opendatasoft.com/explore/dataset/osm-world-airports%40babel/export/

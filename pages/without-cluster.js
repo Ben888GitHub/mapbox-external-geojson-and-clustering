@@ -24,8 +24,11 @@ const WithoutCluster = ({ mapboxToken }) => {
 				<Link className="mr-7 underline cursor-pointer" href="/live-music">
 					Live Music
 				</Link>
-				<Link className="underline cursor-pointer" href="/without-cluster">
+				<Link className="mr-7 underline cursor-pointer" href="/without-cluster">
 					Earthquakes No Cluster
+				</Link>
+				<Link className="underline cursor-pointer" href="/airports-cluster">
+					Airports Cluster
 				</Link>
 			</div>
 			<DataWithoutCluster mapboxToken={mapboxToken} />
