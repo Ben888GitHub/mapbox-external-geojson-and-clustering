@@ -1,0 +1,5 @@
+
+Clustering Concepts
+- https://docs.mapbox.com/mapbox-gl-js/example/cluster/?size=n_10_n , Create Cluster Styles with Earthquake GeoJSON data (can be done in react-map-gl or deck-gl)
+- https://docs.mapbox.com/mapbox-gl-js/example/cluster-html/ - Dynamic Cluster Stroke or Border Styling (can be done in react-map-gl or deck-gl)
+- https://dev.to/naomigrace/how-to-integrate-mapbox-gl-js-in-your-next-js-project-without-react-map-gl-or-a-react-wrapper-library-50f , with NextJS and its github repo https://github.com/naomigrace/nextjs-with-mapbox-gl-js
