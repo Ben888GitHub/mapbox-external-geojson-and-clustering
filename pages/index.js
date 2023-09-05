@@ -21,8 +21,11 @@ export default function Home({ mapboxToken }) {
 				<Link className="mr-7 underline cursor-pointer" href="/">
 					Earthquakes Data
 				</Link>
-				<Link className="underline cursor-pointer" href="/live-music">
+				<Link className="mr-7 underline cursor-pointer" href="/live-music">
 					Live Music
+				</Link>
+				<Link className="underline cursor-pointer" href="/without-cluster">
+					Earthquakes No Cluster
 				</Link>
 			</div>
 			<MapWithData mapboxToken={mapboxToken} />

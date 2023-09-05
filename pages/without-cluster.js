@@ -2,8 +2,8 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Inter } from 'next/font/google';
 
-const MapWithLiveMusic = dynamic(
-	() => import('@/components/MapWithLiveMusic'),
+const DataWithoutCluster = dynamic(
+	() => import('@/components/DataWithoutCluster'),
 	{
 		ssr: false,
 		loading: () => <p className="text-lg text-center mt-5">Loading...</p>
@@ -12,7 +12,7 @@ const MapWithLiveMusic = dynamic(
 
 const inter = Inter({ subsets: ['latin'] });
 
-const LiveMusic = ({ mapboxToken }) => {
+const WithoutCluster = ({ mapboxToken }) => {
 	return (
 		<main
 			className={`flex flex-col items-center justify-between p-16 ${inter.className}`}
@@ -28,12 +28,12 @@ const LiveMusic = ({ mapboxToken }) => {
 					Earthquakes No Cluster
 				</Link>
 			</div>
-			<MapWithLiveMusic mapboxToken={mapboxToken} />
+			<DataWithoutCluster mapboxToken={mapboxToken} />
 		</main>
 	);
 };
 
-export default LiveMusic;
+export default WithoutCluster;
 
 export const getStaticProps = async () => {
 	const mapboxToken = process.env.NEXT_MAPBOX_TOKEN;
