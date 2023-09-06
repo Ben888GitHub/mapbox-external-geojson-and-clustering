@@ -12,3 +12,10 @@ GeoJSON Tools
 Airports GeoJSON Data:
 - https://github.com/codeforgermany/click_that_hood/blob/main/public/data/airports.geojson?short_path=505c236
 - https://data.opendatasoft.com/explore/dataset/osm-world-airports%40babel/export/
+
+
+Writing MapboxGL expressions
+- https://docs.mapbox.com/help/tutorials/mapbox-gl-js-expressions/
+
+Upload any GeoJSON to Mapbox Studio
+- https://docs.mapbox.com/help/troubleshooting/uploads/
