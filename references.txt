@@ -19,3 +19,7 @@ Writing MapboxGL expressions
 
 Upload any GeoJSON to Mapbox Studio
 - https://docs.mapbox.com/help/troubleshooting/uploads/
+
+
+Datasets API
+- https://docs.mapbox.com/api/maps/datasets/
